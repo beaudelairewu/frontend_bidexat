@@ -1,17 +1,19 @@
 import React, {useState, useEffect} from 'react'
 import {Link} from 'react-router-dom'
-import AddCluster from './AddCluster'
+import AddSlide from './AddSlide'
 import { db } from '../firebase'
 import {useAuth} from '../contexts/AuthContext'
-
+import {useLocation } from 'react-router-dom'
 
 export default function SlidesTable() {
 
     const [tdata, setTdata] = useState([])
     const { currentUser} = useAuth()
+    const location = useLocation()
+    const patientID = location.pathname.split('/')[2]
 
     function getTdata(){
-        db.firestore.collection('users').doc(currentUser.email).collection('clusters')
+        db.firestore.collection('users').doc(currentUser.email).collection('patients').doc(patientID).collection("slides")
         .where("deleted", "==", false)
         .onSnapshot((querySnapshot) => {
             setTdata([])
@@ -48,9 +50,16 @@ export default function SlidesTable() {
 
     return (
         <div>
-            <div className="ClusterList">
+            <div className="ClusterList mt-3">
                 <div className="container">
-                    <AddCluster />
+                    <div className='row'>
+                        <div className='col-6'>
+                            <h3 style={{color:"green"}}>Slides</h3>
+                        </div>
+                        <div className='col-6'>
+                            <AddSlide />
+                        </div>
+                    </div>
                     <div className="row">
                         <div className="col-12">
                         <br></br>

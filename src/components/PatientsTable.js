@@ -18,8 +18,8 @@ export default function PatientsTable() {
                 let dat = {
                     id:'',
                     name:'', 
+                    hospitalID:'',
                     created:'', 
-                    modified:'', 
                     images:'', 
                     ovEggs:''
                 }
@@ -27,12 +27,7 @@ export default function PatientsTable() {
                 dat.name = doc.data().name;
                 let date =  doc.data().created.toDate().toString().split(' ')
                 dat.created = `${date[1]} ${date[2]}, ${date[3]}`
-            
-                if(doc.data().modified != (null || "")){
-                    dat.modified = `${date[1]} ${date[2]}, ${date[3]}`
-                }else{
-                    dat.modified = "-"
-                }
+                dat.hospitalID = doc.data().hospitalID
                 dat.images = doc.data().images
                 dat.ovEggs = doc.data().ovEggs
                 setTdata(prevState => [...prevState, dat])
@@ -58,8 +53,8 @@ export default function PatientsTable() {
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Name</th>
+                                        <th scope="col">Patient ID</th>
                                         <th scope="col">Created</th>
-                                        <th scope="col">Modified</th>
                                         <th scope="col">Images</th>
                                         <th scope="col">Ov Eggs</th>
                                     </tr>
@@ -71,8 +66,8 @@ export default function PatientsTable() {
                                             <th scope="row" >
                                                 <Link to={`/patient/${data.id}`} style={{color:'#008000'}}>{data.name}</Link>
                                             </th>
+                                            <td>{data.hospitalID}</td>
                                             <td >{data.created}</td>
-                                            <td >{data.modified}</td>
                                             <td >{data.images}</td>
                                             <td >{data.ovEggs}</td>
                                         </tr>

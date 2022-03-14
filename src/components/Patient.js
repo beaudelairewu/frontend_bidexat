@@ -8,10 +8,11 @@ import {useLocation } from 'react-router-dom'
 
 
     export default function Patient() {
-        const [patientInfo, setPatientInfo] = useState()
+        const [patientInfo, setPatientInfo] = useState([])
         const { currentUser} = useAuth()
         const location = useLocation()
         const patientID = location.pathname.split('/')[2]
+        const headText = {fontWeight:"bold", color:"green"}
 
         
     async function getTdata(){
@@ -19,16 +20,10 @@ import {useLocation } from 'react-router-dom'
         db.firestore.collection('users').doc(currentUser.email).collection('patients').doc(patientID)
         .get()
         .then((snapshot)=>{
-            // const data = {
-            //     name: snapshot.data().name,
-            //     patientID: patientID,
-            //     age: snapshot.data().age,
-            //     sex:snapshot.data().sex,
-            //     description: snapshot.data().description,
-            //     created: snapshot.data().created,
-            //     modified: snapshot.data().modified
-            // }
-            const data = snapshot.data().name
+            setPatientInfo()
+            
+            const data = snapshot.data()
+            console.log(data)
             setPatientInfo(data)
             
               
@@ -44,8 +39,22 @@ import {useLocation } from 'react-router-dom'
     },[]);
   return <div>
       <div className='container'>
-        <div className='card'>
-            {/* <h2>{patientInfo.name}</h2> */}
+        <div className='card shadow-sm mt-4'>
+            <div className='card-body'>
+                <div className='row'>
+                    <div className="col-4 justify-content-center text-center">
+                        <img src="https://stiftung-chancenfuerkinder.de/wp-content/uploads/2020/11/blank-profile-picture-973460_1280.png"
+                        width="40%" className="img-fluid rounded" alt=""/>
+                    </div>
+                    <div className="col-8 d-flex flex-column ">
+                        <h3>{patientInfo==undefined?"":patientInfo.name}</h3>
+                        <p className='mb-0'><span style={headText}>age:</span>  {patientInfo==undefined?"":patientInfo.age}</p>
+                        <p className='mb-0'><span style={headText}>gender:</span>  {patientInfo==undefined?"":patientInfo.gender}</p>
+                        <p className='mb-0'><span style={headText}>patient ID:</span>  {patientInfo==undefined?"":patientInfo.hospitalID}</p>
+                        <p className='mb-0'><span style={headText}>Note:</span>  {patientInfo==undefined?"":patientInfo.description}</p>
+                    </div>
+                </div>
+            </div>
         </div>
       <SlidesTable/>
       </div>
