@@ -10,6 +10,7 @@ export function useAuth() {
 export default function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState()
   const [loading, setLoading] = useState(true)
+  const [currentPatient, setCurrentPatient] = useState()
  
   function signup(email, password) {
     return auth.createUserWithEmailAndPassword(email, password)
@@ -34,6 +35,10 @@ export default function AuthProvider({ children }) {
   function updatePassword(password) {
     return currentUser.updatePassword(password)
   }
+  function makeCurrentPatient(patient){
+    setCurrentPatient(patient)
+    return currentPatient
+  }
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
@@ -51,7 +56,9 @@ export default function AuthProvider({ children }) {
     logout,
     resetPassword,
     updateEmail,
-    updatePassword
+    updatePassword,
+    makeCurrentPatient,
+    currentPatient
   }
 
   return (
