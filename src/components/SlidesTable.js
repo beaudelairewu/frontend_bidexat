@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useParams} from 'react-router-dom'
 import AddSlide from './AddSlide'
 import { db } from '../firebase'
 import {useAuth} from '../contexts/AuthContext'
@@ -10,10 +10,10 @@ export default function SlidesTable() {
     const [tdata, setTdata] = useState([])
     const { currentUser} = useAuth()
     const location = useLocation()
-    const patientID = location.pathname.split('/')[2]
+    const params = useParams()
 
     function getTdata(){
-        db.firestore.collection('users').doc(currentUser.email).collection('patients').doc(patientID).collection("slides")
+        db.firestore.collection('users').doc(currentUser.email).collection('patients').doc(params.patientID).collection("slides")
         .where("deleted", "==", false)
         .onSnapshot((querySnapshot) => {
             setTdata([])
@@ -80,7 +80,7 @@ export default function SlidesTable() {
                                         <tr key={data.id}>
                                             <th scope="row">{i+1}</th>
                                             <th scope="row" >
-                                                <Link to={`/slide/${data.id}`} style={{color:'#008000'}}>{data.name}</Link>
+                                                <Link to={`/patient/${params.patientID}/slide/${data.id}`} style={{color:'#008000'}}>{data.name}</Link>
                                             </th>
                                             <td >{data.created}</td>
                                             <td >{data.modified}</td>

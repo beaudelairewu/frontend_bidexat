@@ -3,7 +3,7 @@ import {Modal, Form, Button} from "react-bootstrap"
 import { db } from '../firebase'
 import { useAuth } from '../contexts/AuthContext'
 import { useHistory } from 'react-router'
-import {useLocation } from 'react-router-dom'
+import {useLocation, useParams} from 'react-router-dom'
 
 
 export default function AddSlide() {
@@ -15,7 +15,8 @@ export default function AddSlide() {
     const [errStatus, setErrStatus] = useState('')
     const history = useHistory()
     const location = useLocation()
-    const patientID = location.pathname.split('/')[2]
+    const params = useParams()
+    const patientID = params.patientID
 
     function openModal(){
         setModalState(true)

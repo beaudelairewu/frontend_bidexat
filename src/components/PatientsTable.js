@@ -64,7 +64,9 @@ export default function PatientsTable() {
                                         <tr key={data.id}>
                                             <th scope="row">{i+1}</th>
                                             <th scope="row" >
-                                                <Link to={`/patient/${data.id}`} style={{color:'#008000'}}>{data.name}</Link>
+                                                <Link to={`/patient/${data.id}`} 
+                                                key={data.id}
+                                                style={{color:'#008000'}}>{data.name}</Link>
                                             </th>
                                             <td>{data.hospitalID}</td>
                                             <td >{data.created}</td>

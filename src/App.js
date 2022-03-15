@@ -26,9 +26,10 @@ function App() {
           <Route path="/login" component={Login}/>
           <Route path="/signup" component={Signup}/>
           {/* <PrivateRoute path="/slidesTable" component={SlidesTable}/> */}
-          <PrivateRoute path="/slide" component={Slide}/>
           <PrivateRoute path="/dashboard" component={DashBoard}/>
-          <PrivateRoute path="/patient" component={Patient}/>
+          <PrivateRoute path="/patient/:patientID/slide/:slideID" component={Slide}/>
+          <PrivateRoute path="/patient/:patientID" component={Patient}>
+          </PrivateRoute>
         </Switch>
         
         </AuthProvider>

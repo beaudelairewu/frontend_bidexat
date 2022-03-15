@@ -1,17 +1,17 @@
 import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom'
+import {Link, useParams, useLocation} from 'react-router-dom'
 import { db } from '../firebase'
 import {useAuth} from '../contexts/AuthContext'
 import SlidesTable from './SlidesTable';
-import {useLocation } from 'react-router-dom'
 
 
 
     export default function Patient() {
         const [patientInfo, setPatientInfo] = useState([])
-        const { currentUser, currentPatient, makeCurrentPatient} = useAuth()
+        const { currentUser} = useAuth()
         const location = useLocation()
-        const patientID = location.pathname.split('/')[2]
+        const params = useParams()
+        const patientID = params.patientID
         const headText = {fontWeight:"bold", color:"green"}
 
         
@@ -35,9 +35,6 @@ import {useLocation } from 'react-router-dom'
 
     useEffect(()=>{
         getTdata()
-        makeCurrentPatient(patientID)
-        console.log(patientInfo)
-        console.log(currentPatient)
     },[]);
   return <div>
       <div className='container'>
@@ -54,7 +51,6 @@ import {useLocation } from 'react-router-dom'
                         <p className='mb-0'><span style={headText}>gender:</span>  {patientInfo==undefined?"":patientInfo.gender}</p>
                         <p className='mb-0'><span style={headText}>patient ID:</span>  {patientInfo==undefined?"":patientInfo.hospitalID}</p>
                         <p className='mb-0'><span style={headText}>Note:</span>  {patientInfo==undefined?"":patientInfo.description}</p>
-                        <p className='mb-0'><span style={headText}>Note:</span>  {currentPatient==undefined?"":currentPatient}</p>
                     </div>
                 </div>
             </div>
