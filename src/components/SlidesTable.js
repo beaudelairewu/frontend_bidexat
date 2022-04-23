@@ -13,7 +13,9 @@ export default function SlidesTable() {
     const params = useParams()
 
     function getTdata(){
-        db.firestore.collection('users').doc(currentUser.email).collection('patients').doc(params.patientID).collection("slides")
+        db.firestore.collection('users').doc(currentUser.email)
+        .collection('patients').doc(params.patientID)
+        .collection("slides")
         .where("deleted", "==", false)
         .onSnapshot((querySnapshot) => {
             setTdata([])

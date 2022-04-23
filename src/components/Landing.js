@@ -18,7 +18,7 @@ export default function Landing() {
                 <div className="row" >
                     <div className="col-12 text-center">
                         <p>For non-public user go to Dashboard.</p>
-                        <Link to="/clustertable">
+                        <Link to="/dashboard">
                             <button className="btn btn-success">Go to Dashboard</button>       
                         </Link>
                     </div>

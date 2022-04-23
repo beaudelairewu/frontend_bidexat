@@ -7,3 +7,4 @@ export default function FastDetection() {
 }
 
 // fast detection is for 1 pic at a time
+// data are not stored on database

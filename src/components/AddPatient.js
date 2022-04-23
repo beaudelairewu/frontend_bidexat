@@ -28,7 +28,9 @@ export default function AddPatient() {
         e.preventDefault()
 
         try{
-            await db.firestore.collection('users').doc(currentUser.email).collection('patients').add({
+            await db.firestore.collection('users').doc(currentUser.email)
+            .collection('patients')
+            .add({
                 name: name,
                 age: age,
                 gender:gender,

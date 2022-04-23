@@ -1,12 +1,17 @@
 import React, {useState, useEffect}from 'react';
 import {Modal, Form, Button} from "react-bootstrap"
+import { useParams } from 'react-router-dom';
+import {db, storage} from '../firebase'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function AddImage() {
     const [modalState, setModalState] = useState(false)
-    const [chunkFile, setchunkFile] = useState([])
-    const [actualFiles, setActualFiles] = useState([])
-    const [selectedFile, setSelectedFile] = useState([])
-
+    const [files, setFiles] = useState()
+    const params = useParams()
+    const {currentUser} = useAuth()
+    const [uploadProgress, setUploadProgress] = useState(0)
+    const [detectProgress, setDetectProgress] = useState(0)
+    const [tdata, setTdata] = useState([])
     
     function openModal(){
         setModalState(true)
@@ -16,52 +21,44 @@ export default function AddImage() {
         setModalState(false)
     }
 
-    function splitToChunks(items, size) {
-        const a = []
-        const result = new Array(Math.ceil(items.length / size)).fill().map(_ => items.splice(0, size))
-        a.push(result)
-        setchunkFile(a)
+    function fileChange(e){
+        setFiles()
+        setFiles(e.target.files)
     }
-
+    
     async function handleSubmit(e){
         e.preventDefault()
-        
+        for(let i=0;i<files.length;i++){
+            storage.ref().child(`input/${currentUser.email}/${params.patientID}/${params.slideID}/${files[i].name}`).put(files[i])
+            try{
+                await db.firestore.collection('users').doc(currentUser.email)
+                .collection('patients').doc(params.patientID)
+                .collection('slides').doc(params.slideID)
+                .collection('images').doc(files[i].name)
+                .set({
+                    name: files[i].name,
+                    deleted: false,
+                    processed: false,
+                    ovCount: 0,
+                    created: new Date(),
+                })
+            }catch(e){
+                console.log(e)
+            }
+
+            let prog = ((i+1)*100)/files.length
+            setUploadProgress(prog)
+        }
+        setFiles()
         closeModal()
     }
-    function fileChange(e){
-        console.log(e.target.files)
-        setActualFiles([])
-        // setSelectedFile([])
-        setchunkFile([])
-        const files = e.target.files
-        for(let i=0; i<files.length;i++){
-            setSelectedFile(prevState => [...prevState, files[i].name])
-        }
-        setActualFiles(files)
-        console.log(selectedFile)
 
-        const a = []
-        const size = 12
-        const items = selectedFile
-        const result = new Array(Math.ceil(items.length / size)).fill().map(_ => items.splice(0, size))
-        a.push(result)
-        setchunkFile(a)
-        console.log(chunkFile)
-    }
-
-    // useEffect(()=>{
-    //     if(selectedFile != []){
-    //     splitToChunks(selectedFile, 12)
-    //     }
-    // },[selectedFile])
-
+    
     return <div>
       <div className="container">
                 <div className="row">
-                     <div className="col-6">
-                     {/* <h2 className="py-1">Dashboard</h2> */}
-                     </div>
-                    <div className="col-6">
+                    <div className="col-6"></div>
+                    <div className="col-6 mt-2">
                         <button className="btn btn-outline-success my-1 float-end" onClick={openModal}>Add New Samples</button>
                             <Modal show={modalState} onHide={closeModal}>
                                 <Form onSubmit={handleSubmit}>
@@ -71,10 +68,9 @@ export default function AddImage() {
                                         <Form.Control
                                             type="file"
                                             multiple
-                                            // webkitdirectory="true"
                                             required
                                             onChange={fileChange}
-                                            accept="images/*"
+                                            accept="image/*"
                                         />
                                         </Form.Group>
                                     </Modal.Body>
@@ -83,13 +79,27 @@ export default function AddImage() {
                                         Close
                                         </Button>
                                         <Button variant="success" type="submit">
-                                        Add Collection
+                                        Add New Samples
                                         </Button>
                                     </Modal.Footer>
                                 </Form>
                             </Modal>
-                    </div>
+                        </div>
                 </div>
+                {(uploadProgress||detectProgress)==0?"": <div className='row'>
+                    <div className='col-6'><p className='text-end'>upload images to cloud storage</p></div>
+                    <div className='col-6 mt-2'>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar"  aria-valuenow={uploadProgress} style={{width:`${uploadProgress}%`}} aria-valuemin="0" aria-valuemax="100">{uploadProgress}%</div>
+                        </div>
+                    </div>
+                    <div className='col-6'><p className='text-end'>AI run detection</p></div>
+                    <div className='col-6 mt-2'>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar"  aria-valuenow={detectProgress} style={{width:`${detectProgress}%`}} aria-valuemin="0" aria-valuemax="100">{detectProgress}%</div>
+                        </div>
+                    </div>
+                </div> } 
             </div>
   </div>;
 }

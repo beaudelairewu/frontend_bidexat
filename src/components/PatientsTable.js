@@ -10,7 +10,8 @@ export default function PatientsTable() {
     const { currentUser} = useAuth()
 
     function getTdata(){
-        db.firestore.collection('users').doc(currentUser.email).collection('patients')
+        db.firestore.collection('users').doc(currentUser.email)
+        .collection('patients')
         .where("deleted", "==", false)
         .onSnapshot((querySnapshot) => {
             setTdata([])

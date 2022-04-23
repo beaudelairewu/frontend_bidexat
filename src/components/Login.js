@@ -1,4 +1,4 @@
-import React, {useRef, useState } from 'react'
+import React, {useRef, useState, useEffect } from 'react'
 import { Form, Button, Card, Alert, Container } from "react-bootstrap"
 import {useAuth} from '../contexts/AuthContext'
 import {Link, useHistory } from 'react-router-dom'
@@ -28,6 +28,12 @@ export default function Login() {
         setLoading(false)
 
     }
+
+    useEffect(()=>{
+        if (currentUser != null){
+            history.push('/dashboard')
+        }
+    },[]);
 
     return (
             <div className="Login">

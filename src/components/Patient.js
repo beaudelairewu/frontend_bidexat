@@ -17,20 +17,25 @@ import SlidesTable from './SlidesTable';
         
     async function getTdata(){
         setPatientInfo()
-        db.firestore.collection('users').doc(currentUser.email).collection('patients').doc(patientID)
+        db.firestore.collection('users').doc(currentUser.email)
+        .collection('patients').doc(patientID)
         .get()
         .then((snapshot)=>{
-            setPatientInfo()
-            
-            const data = snapshot.data()
-            console.log(data)
-            setPatientInfo(data)
+            if (snapshot.exists){
+                console.log(snapshot.exists)
+                setPatientInfo()
+                
+                const data = snapshot.data()
+                console.log(data)
+                setPatientInfo(data)
+            }else{
+                console.log('nope')
+            }
             
               
         }).catch((err)=>{
             console.error(err)
         })
-        // console.log(patientInfo)
     }
 
     useEffect(()=>{
