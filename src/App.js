@@ -4,10 +4,9 @@ import Signup from './components/SignUp';
 import Landing from './components/Landing';
 import PrivateRoute from './components/PrivateRoute'
 import Navigation from './components/Navigation';
-import SlidesTable from './components/SlidesTable';
 import Slide from './components/Slide';
 import DashBoard from './components/DashBoard';
-import Patient from './components/Patient'
+import Patient from './components/Patient/Patient'
 import {
   BrowserRouter as Router,
   Switch,
@@ -28,8 +27,8 @@ function App() {
           {/* <PrivateRoute path="/slidesTable" component={SlidesTable}/> */}
           <PrivateRoute path="/dashboard" component={DashBoard}/>
           <PrivateRoute path="/patient/:patientID/slide/:slideID" component={Slide}/>
-          <PrivateRoute path="/patient/:patientID" component={Patient}>
-          </PrivateRoute>
+          <PrivateRoute path="/patient/:patientID" component={Patient}/>
+          <Route path="*" exact={true}><h1 className="text-center">404 NOT FOUND</h1></Route>
         </Switch>
         
         </AuthProvider>

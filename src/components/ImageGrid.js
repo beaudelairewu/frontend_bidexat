@@ -2,13 +2,13 @@ import Gallery from 'react-grid-gallery';
 import React, {useState, useEffect}from 'react';
 import { useParams } from 'react-router-dom';
 import {db, storage} from '../firebase'
-import { useAuth } from '../contexts/AuthContext'
+import {useAuth} from '../contexts/AuthContext'
 
 export default function ImageGrid() {
 
     const params = useParams()
-    const {currentUser} = useAuth()
-    const [tdata, setTdata] = useState([])
+    const {currentUser, imageData, setImageData} = useAuth()
+    // const [ImageData, setImageData] = useState([])
 
     async function getImages(){
         db.firestore.collection('users').doc(currentUser.email)
@@ -18,16 +18,16 @@ export default function ImageGrid() {
         .where("deleted", "==", false)
         // .where("processed","==", true)
         .onSnapshot((querySnapshot) => {
-            setTdata([])
+            setImageData([])
             querySnapshot.forEach((doc) => { 
                 const data = doc.data()
                 // console.log(data)
                 let dat = {
-                    id: doc.id,
-                    name: data.name, 
-                    created:'', 
-                    processed: data.processed,
-                    ovCount: data.ovCount,
+                    // id: doc.id,
+                    // name: data.name, 
+                    // created:'', 
+                    // processed: data.processed,
+                    // ovCount: data.ovCount,
                     src: '',
                     thumbnail:'',
                     thumbnailWidth:20,
@@ -41,7 +41,7 @@ export default function ImageGrid() {
                     dat.src = url
                     dat.thumbnail = url
                 })
-                setTdata(prevState => [...prevState, dat])
+                setImageData(prevState => [...prevState, dat])
             });
         });
     }
@@ -52,7 +52,7 @@ export default function ImageGrid() {
 
   return (
     <div className='container'>
-        <Gallery images={tdata}/>
+        <Gallery images={imageData}/>
     </div>
   )
 }

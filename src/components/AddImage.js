@@ -11,7 +11,8 @@ export default function AddImage() {
     const {currentUser} = useAuth()
     const [uploadProgress, setUploadProgress] = useState(0)
     const [detectProgress, setDetectProgress] = useState(0)
-    const [tdata, setTdata] = useState([])
+    const [fileNames, setFileNames] = useState([])
+    const clusterSize = 3
     
     function openModal(){
         setModalState(true)
@@ -22,44 +23,63 @@ export default function AddImage() {
     }
 
     function fileChange(e){
+        const cfiles = e.target.files
         setFiles()
-        setFiles(e.target.files)
+        setFileNames([])
+        setFiles(cfiles)
+        for(let i=0;i<cfiles.length;i++){
+            setFileNames((prevState)=>[...prevState, cfiles[i].name])
+        }
+        console.log(fileNames)
     }
     
     async function handleSubmit(e){
         e.preventDefault()
-        for(let i=0;i<files.length;i++){
-            storage.ref().child(`input/${currentUser.email}/${params.patientID}/${params.slideID}/${files[i].name}`).put(files[i])
-            try{
-                await db.firestore.collection('users').doc(currentUser.email)
-                .collection('patients').doc(params.patientID)
-                .collection('slides').doc(params.slideID)
-                .collection('images').doc(files[i].name)
-                .set({
-                    name: files[i].name,
-                    deleted: false,
-                    processed: false,
-                    ovCount: 0,
-                    created: new Date(),
-                })
-            }catch(e){
-                console.log(e)
-            }
-
-            let prog = ((i+1)*100)/files.length
-            setUploadProgress(prog)
-        }
-        setFiles()
         closeModal()
+        // for(let i=0;i<files.length;i++){
+        //     storage.ref().child(`input/${currentUser.email}/${params.patientID}/${params.slideID}/${files[i].name}`).put(files[i])
+        //     try{
+        //         await db.firestore.collection('users').doc(currentUser.email)
+        //         .collection('patients').doc(params.patientID)
+        //         .collection('slides').doc(params.slideID)
+        //         .collection('images').doc(files[i].name)
+        //         .set({
+        //             name: files[i].name,
+        //             deleted: false,
+        //             processed: false,
+        //             ovCount: 0,
+        //             created: new Date(),
+        //         })
+        //     }catch(e){
+        //         console.log(e)
+        //     }
+        //     let prog = (50+(i+1)*100)/files.length
+        //     setUploadProgress(prog)
+        // }
+        
+        for (let i = 0; i < files.length; i += clusterSize) {
+            const chunk = fileNames.slice(i, i + clusterSize);
+            const formDat = new FormData
+            formDat.append('userID', currentUser.email)
+            formDat.append('patientID', params.patientID)
+            formDat.append('slideID', params.slideID)
+            formDat.append('image_name_list', chunk)
+            const response = await fetch('https://beaudelaire.free.beeceptor.com', {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials:'omit',
+                body: formDat
+            })
+            console.log(response)
+        }
+        
     }
 
     
     return <div>
-      <div className="container">
-                <div className="row">
-                    <div className="col-6"></div>
-                    <div className="col-6 mt-2">
-                        <button className="btn btn-outline-success my-1 float-end" onClick={openModal}>Add New Samples</button>
+      <div >
+                        <button className="btn btn-outline-success mt-1 mb-2 float-end" onClick={openModal}>Add New Samples</button>
                             <Modal show={modalState} onHide={closeModal}>
                                 <Form onSubmit={handleSubmit}>
                                     <Modal.Body>
@@ -84,8 +104,8 @@ export default function AddImage() {
                                     </Modal.Footer>
                                 </Form>
                             </Modal>
-                        </div>
-                </div>
+                       
+                
                 {(uploadProgress||detectProgress)==0?"": <div className='row'>
                     <div className='col-6'><p className='text-end'>upload images to cloud storage</p></div>
                     <div className='col-6 mt-2'>

@@ -28,7 +28,10 @@ export default function AddSlide() {
         e.preventDefault()
 
         try{
-            db.firestore.collection('users').doc(currentUser.email).collection('patients').doc(patientID).collection('slides').add({
+            db.firestore.collection('users').doc(currentUser.email)
+            .collection('patients').doc(patientID)
+            .collection('slides')
+            .add({
                 name: clusterTag,
                 description: description,
                 created: new Date(),

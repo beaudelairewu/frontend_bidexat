@@ -17,6 +17,7 @@ export default function AddPatient() {
     const [errStatus, setErrStatus] = useState('')
     const history = useHistory()
     const headText = {fontWeight:"bold", color:"green"}
+    const [loading, setLoading] = useState(false)
 
     function openModal(){
         setModalState(true)
@@ -26,6 +27,7 @@ export default function AddPatient() {
     }
     async function handleSubmit(e){
         e.preventDefault()
+        setLoading(true)
 
         try{
             await db.firestore.collection('users').doc(currentUser.email)
@@ -55,6 +57,7 @@ export default function AddPatient() {
 
         // history.go(0)
         closeModal()
+        setLoading(false)
 
     }
 
@@ -113,7 +116,7 @@ export default function AddPatient() {
                                         <Button variant="secondary" onClick={closeModal}>
                                         Close
                                         </Button>
-                                        <Button variant="success" type="submit">
+                                        <Button variant="success" type="submit" disabled={loading}>
                                         Add Patient
                                         </Button>
                                     </Modal.Footer>
