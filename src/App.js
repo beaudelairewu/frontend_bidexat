@@ -7,6 +7,7 @@ import Navigation from './components/Navigation';
 import Slide from './components/Slide';
 import DashBoard from './components/DashBoard';
 import Patient from './components/Patient/Patient'
+import Docs from './components/Docs'
 import {
   BrowserRouter as Router,
   Switch,
@@ -24,6 +25,7 @@ function App() {
           <Route path="/" exact component={Landing}/>
           <Route path="/login" component={Login}/>
           <Route path="/signup" component={Signup}/>
+          <Route path="/docs" component={Docs}/>
           {/* <PrivateRoute path="/slidesTable" component={SlidesTable}/> */}
           <PrivateRoute path="/dashboard" component={DashBoard}/>
           <PrivateRoute path="/patient/:patientID/slide/:slideID" component={Slide}/>

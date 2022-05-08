@@ -35,28 +35,31 @@ export default function AddImage() {
     
     async function handleSubmit(e){
         e.preventDefault()
+        setUploadProgress(0)
+        setDetectProgress(0)
         closeModal()
-        // for(let i=0;i<files.length;i++){
-        //     storage.ref().child(`input/${currentUser.email}/${params.patientID}/${params.slideID}/${files[i].name}`).put(files[i])
-        //     try{
-        //         await db.firestore.collection('users').doc(currentUser.email)
-        //         .collection('patients').doc(params.patientID)
-        //         .collection('slides').doc(params.slideID)
-        //         .collection('images').doc(files[i].name)
-        //         .set({
-        //             name: files[i].name,
-        //             deleted: false,
-        //             processed: false,
-        //             ovCount: 0,
-        //             created: new Date(),
-        //         })
-        //     }catch(e){
-        //         console.log(e)
-        //     }
-        //     let prog = (50+(i+1)*100)/files.length
-        //     setUploadProgress(prog)
-        // }
+        for(let i=0;i<files.length;i++){
+            storage.ref().child(`input/${currentUser.email}/${params.patientID}/${params.slideID}/${files[i].name}`).put(files[i])
+            try{
+                await db.firestore.collection('users').doc(currentUser.email)
+                .collection('patients').doc(params.patientID)
+                .collection('slides').doc(params.slideID)
+                .collection('images').doc(files[i].name)
+                .set({
+                    name: files[i].name,
+                    deleted: false,
+                    processed: false,
+                    ovCount: 0,
+                    created: new Date(),
+                })
+            }catch(e){
+                console.log(e)
+            }
+            let prog = ((i+1)*100)/files.length
+            setUploadProgress(prog)
+        }
         
+        setDetectProgress(33)
         for (let i = 0; i < files.length; i += clusterSize) {
             const chunk = fileNames.slice(i, i + clusterSize);
             const formDat = new FormData
@@ -64,15 +67,16 @@ export default function AddImage() {
             formDat.append('patientID', params.patientID)
             formDat.append('slideID', params.slideID)
             formDat.append('image_name_list', chunk)
-            const response = await fetch('https://beaudelaire.free.beeceptor.com', {
+            const response = await fetch('https://api.bidex.health/detectov', {
                 method: 'POST',
                 mode: 'cors',
                 cache: 'no-cache',
                 credentials:'omit',
                 body: formDat
             })
-            console.log(response)
+            console.log(response.json())
         }
+        setDetectProgress(36)
         
     }
 
@@ -106,20 +110,25 @@ export default function AddImage() {
                             </Modal>
                        
                 
-                {(uploadProgress||detectProgress)==0?"": <div className='row'>
+                {uploadProgress==0?"": 
+                <div className='row'>
                     <div className='col-6'><p className='text-end'>upload images to cloud storage</p></div>
                     <div className='col-6 mt-2'>
                         <div class="progress">
                             <div class="progress-bar bg-success" role="progressbar"  aria-valuenow={uploadProgress} style={{width:`${uploadProgress}%`}} aria-valuemin="0" aria-valuemax="100">{uploadProgress}%</div>
                         </div>
-                    </div>
+                    </div> 
+                </div>}
+                {detectProgress==0?"":
+                <div className='row'>
                     <div className='col-6'><p className='text-end'>AI run detection</p></div>
                     <div className='col-6 mt-2'>
                         <div class="progress">
                             <div class="progress-bar bg-success" role="progressbar"  aria-valuenow={detectProgress} style={{width:`${detectProgress}%`}} aria-valuemin="0" aria-valuemax="100">{detectProgress}%</div>
                         </div>
                     </div>
-                </div> } 
+                </div>
+                }
             </div>
   </div>;
 }

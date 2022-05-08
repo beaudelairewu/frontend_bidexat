@@ -16,7 +16,7 @@ export default function ImageGrid() {
         .collection('slides').doc(params.slideID)
         .collection('images')
         .where("deleted", "==", false)
-        // .where("processed","==", true)
+        .where("computed","==", true)
         .onSnapshot((querySnapshot) => {
             setImageData([])
             querySnapshot.forEach((doc) => { 
@@ -31,11 +31,12 @@ export default function ImageGrid() {
                     src: '',
                     thumbnail:'',
                     thumbnailWidth:20,
-                    thumbnailHeight:10
+                    thumbnailHeight:10, 
+                    caption: `${data.name}  OV Count: ${data.ovCount}`
                 }
                 // let date =  data.created.toDate().toString().split(' ')
                 // dat.created = `${date[1]} ${date[2]}, ${date[3]}`
-                storage.ref().child(`input/${currentUser.email}/${params.patientID}/${params.slideID}/${data.name}`)
+                storage.ref().child(`output/${currentUser.email}/${params.patientID}/${params.slideID}/${data.name}`)
                 .getDownloadURL()
                 .then((url)=>{
                     dat.src = url

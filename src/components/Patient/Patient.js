@@ -4,6 +4,7 @@ import { db } from '../../firebase'
 import {useAuth} from '../../contexts/AuthContext'
 import SlidesTable from '../SlidesTable';
 import EditPatientInfo from './EditPatientInfo';
+import AddFormCCA from '../AddFormCCA';
 
 
 
@@ -79,6 +80,8 @@ import EditPatientInfo from './EditPatientInfo';
             </div>
         </div> */}
       <SlidesTable/>
+      <br/>
+      <AddFormCCA/>
       </div>
   </div>;
 }
